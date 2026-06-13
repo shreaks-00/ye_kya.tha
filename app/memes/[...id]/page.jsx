@@ -1,14 +1,32 @@
 import { notFound } from 'next/navigation';
 import SingleMemeClient from './SingleMemeClient';
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 async function getMeme(id) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/media/${id}`, { cache: 'no-store' });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
+    const result = await cloudinary.api.resource(id, {
+      resource_type: 'image',
+      context: true,
+      tags: true,
+    });
+    return result;
+  } catch (err) {
+    try {
+      const result = await cloudinary.api.resource(id, {
+        resource_type: 'video',
+        context: true,
+        tags: true,
+      });
+      return result;
+    } catch (err2) {
+      return null;
+    }
   }
 }
 

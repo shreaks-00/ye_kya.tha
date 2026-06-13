@@ -5,13 +5,24 @@ import ScrollReveal from './components/ScrollReveal';
 import AnimatedCounter from './components/AnimatedCounter';
 import GlitchText from './components/GlitchText';
 
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 async function getFeaturedMemes() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/media?limit=6`, { cache: 'no-store' });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.resources || [];
+    const result = await cloudinary.search
+      .expression('resource_type:image OR resource_type:video')
+      .sort_by('created_at', 'desc')
+      .max_results(6)
+      .with_field('context')
+      .with_field('tags')
+      .execute();
+    return result.resources || [];
   } catch {
     return [];
   }
