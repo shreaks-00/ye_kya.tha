@@ -120,6 +120,17 @@ function UploadTab({ onSuccess, showToast }) {
   async function handleUpload(e) {
     e.preventDefault();
     if (!file) return;
+
+    const isVideoFile = file.type.startsWith('video/');
+    if (isVideoFile && file.size > 100 * 1024 * 1024) {
+      showToast('Video exceeds 100MB limit', 'error');
+      return;
+    }
+    if (!isVideoFile && file.size > 10 * 1024 * 1024) {
+      showToast('Image exceeds 10MB limit', 'error');
+      return;
+    }
+
     setUploading(true);
 
     try {
@@ -213,7 +224,7 @@ function UploadTab({ onSuccess, showToast }) {
             <div className={styles.dropPrompt}>
               <span className={styles.dropIcon}>📁</span>
               <p>Drag & drop or click to select</p>
-              <span className={styles.dropSub}>Images & Videos supported</span>
+              <span className={styles.dropSub}>Max limits: Videos (100MB) | Images (10MB)</span>
             </div>
           )}
         </div>
