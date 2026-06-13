@@ -1,11 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './MemeCard.module.css';
 
 export default function MemeCard({ item }) {
   const [downloading, setDownloading] = useState(false);
   const [hovering, setHovering] = useState(false);
+  const videoRef = useRef(null);
 
   const isVideo = item.resource_type === 'video';
   const thumbUrl = isVideo
@@ -14,6 +15,16 @@ export default function MemeCard({ item }) {
 
   const title = item.context?.custom?.caption || item.context?.custom?.alt || item.public_id.split('/').pop();
   const tags = item.tags || [];
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    if (hovering) {
+      videoRef.current.play().catch(() => {});
+    } else {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }, [hovering]);
 
   async function handleDownload(e) {
     e.preventDefault();
@@ -42,16 +53,20 @@ export default function MemeCard({ item }) {
     >
       <Link href={`/memes/${item.public_id}`} className={styles.mediaWrap}>
         {isVideo ? (
-          <video
-            src={item.secure_url}
-            className={styles.media}
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            onMouseEnter={(e) => e.target.play()}
-            onMouseLeave={(e) => { e.target.pause(); e.target.currentTime = 0; }}
-          />
+          <>
+            {/* Show static thumbnail by default, reveal playing video on hover */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={thumbUrl} alt={title} className={`${styles.media} ${hovering ? styles.hidden : ''}`} loading="lazy" />
+            <video
+              ref={videoRef}
+              src={hovering ? item.secure_url : ''} 
+              className={`${styles.media} ${!hovering ? styles.hidden : ''}`}
+              muted
+              loop
+              playsInline
+              preload="none"
+            />
+          </>
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={thumbUrl} alt={title} className={styles.media} loading="lazy" />

@@ -30,6 +30,10 @@
   display: block;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .card:hover .media {
   transform: scale(1.05);
 }
