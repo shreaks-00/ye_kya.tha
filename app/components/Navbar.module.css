@@ -1,0 +1,115 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 16px 0;
+  transition: all 0.3s ease;
+}
+
+.nav.scrolled {
+  background: rgba(7, 7, 13, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(191, 0, 255, 0.2);
+  padding: 10px 0;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logoIcon {
+  font-size: 2rem;
+  filter: drop-shadow(0 0 8px rgba(191, 0, 255, 0.8));
+}
+
+.logoText {
+  font-family: 'Bangers', cursive;
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #bf00ff, #ff0090);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.link {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #9090bb;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.link:hover { color: #f0f0ff; }
+.link.active { color: #bf00ff; }
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #f0f0ff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 680px) {
+  .hamburger { display: flex; }
+
+  .links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    padding: 20px;
+    background: rgba(7, 7, 13, 0.97);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(191, 0, 255, 0.2);
+    gap: 12px;
+  }
+
+  .links.open { display: flex; }
+
+  .link { width: 100%; text-align: center; }
+  
+  /* Hamburger Open State */
+  .hamburger span:nth-child(1).barOpen { transform: translateY(7px) rotate(45deg); }
+  .hamburger span:nth-child(2).barOpen { opacity: 0; }
+  .hamburger span:nth-child(3).barOpen { transform: translateY(-7px) rotate(-45deg); }
+}

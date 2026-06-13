@@ -1,0 +1,91 @@
+.page {
+  padding: 120px 20px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.pageTitle {
+  font-family: 'Bangers', cursive;
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  letter-spacing: 3px;
+  color: #f0f0ff;
+  margin-bottom: 12px;
+}
+
+.pageSub {
+  color: #9090bb;
+  font-size: 1.05rem;
+}
+
+/* ---- Controls ---- */
+.controls {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  background: #0f0f1a;
+  border: 1px solid rgba(191, 0, 255, 0.2);
+  border-radius: 18px;
+  padding: 16px 20px;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 200px;
+}
+
+.typeFilters {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.sortSelect {
+  width: auto;
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+/* ---- States ---- */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 100px 20px;
+  color: #9090bb;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 80px 20px;
+  color: #9090bb;
+}
+
+.emptyState span { font-size: 4rem; display: block; margin-bottom: 16px; }
+
+.count {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  color: #4a4a72;
+  margin-bottom: 20px;
+}
+
+.loadMore {
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .page { padding: 90px 16px 60px; }
+  .controls { flex-direction: column; align-items: stretch; gap: 16px; padding: 16px; }
+  .typeFilters { justify-content: space-between; }
+  .typeFilters > * { flex: 1; text-align: center; justify-content: center; }
+}
