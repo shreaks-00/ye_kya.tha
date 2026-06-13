@@ -121,22 +121,55 @@ function UploadTab({ onSuccess, showToast }) {
     e.preventDefault();
     if (!file) return;
     setUploading(true);
-    const form = new FormData();
-    form.append('file', file);
-    form.append('caption', caption);
-    form.append('tags', tags);
 
     try {
-      const res = await fetch('/api/upload', { method: 'POST', body: form });
-      if (!res.ok) {
-        const d = await res.json();
-        showToast(d.error || 'Upload failed', 'error');
-        return;
+      // 1. Get Signature from our backend
+      const contextStr = caption ? `caption=${caption}` : '';
+      const tagsStr = tags ? tags.split(',').map(t => t.trim()).filter(Boolean).join(',') : '';
+
+      const signRes = await fetch('/api/sign-upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          tags: tagsStr || undefined, 
+          context: contextStr || undefined 
+        })
+      });
+
+      if (!signRes.ok) {
+        throw new Error('Failed to authorize upload. Check admin session.');
       }
+
+      const { signature, timestamp, cloud_name, api_key, folder } = await signRes.json();
+
+      // 2. Upload file directly to Cloudinary using the signature
+      const form = new FormData();
+      form.append('file', file);
+      form.append('api_key', api_key);
+      form.append('timestamp', timestamp);
+      form.append('signature', signature);
+      form.append('folder', folder);
+      if (tagsStr) form.append('tags', tagsStr);
+      if (contextStr) form.append('context', contextStr);
+
+      const isVideo = file.type.startsWith('video/');
+      const resourceType = isVideo ? 'video' : 'image';
+
+      const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloud_name}/${resourceType}/upload`, {
+        method: 'POST',
+        body: form
+      });
+
+      if (!uploadRes.ok) {
+        const errData = await uploadRes.json();
+        throw new Error(errData.error?.message || 'Cloudinary upload failed');
+      }
+
+      // Success
       setFile(null); setCaption(''); setTags(''); setPreview(null);
       onSuccess();
-    } catch {
-      showToast('Upload failed', 'error');
+    } catch (err) {
+      showToast(err.message || 'Upload failed', 'error');
     } finally {
       setUploading(false);
     }
