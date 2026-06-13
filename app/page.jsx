@@ -5,6 +5,8 @@ import ScrollReveal from './components/ScrollReveal';
 import AnimatedCounter from './components/AnimatedCounter';
 import GlitchText from './components/GlitchText';
 
+export const dynamic = 'force-dynamic';
+
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({
