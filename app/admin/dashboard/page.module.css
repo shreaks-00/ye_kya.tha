@@ -445,7 +445,7 @@
   }
   .adminCardInfo { 
     flex: 1; 
-    min-width: calc(100% - 90px);
+    min-width: 0;
     text-align: left;
     gap: 4px;
   }
@@ -456,6 +456,7 @@
     -webkit-box-orient: vertical; 
     overflow: hidden; 
     font-size: 0.85rem; 
+    word-break: break-word;
   }
   .adminCardMeta { 
     flex-direction: row; 

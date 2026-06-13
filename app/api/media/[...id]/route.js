@@ -70,13 +70,24 @@ export async function PATCH(request, { params }) {
   try {
     const updates = {};
     if (caption !== undefined) {
-      await cloudinary.uploader.add_context(`caption=${caption}`, [publicId], { resource_type });
+      if (!caption.trim()) {
+        await cloudinary.uploader.remove_all_context([publicId], { resource_type });
+      } else {
+        const safeCaption = caption.replace(/[|=]/g, ' '); // prevent breaking context string
+        await cloudinary.uploader.add_context(`caption=${safeCaption}`, [publicId], { resource_type });
+      }
     }
+    
     if (tags !== undefined) {
-      await cloudinary.uploader.replace_tag(tags.join(','), [publicId], { resource_type });
+      if (tags.length === 0) {
+        await cloudinary.uploader.remove_all_tags([publicId], { resource_type });
+      } else {
+        await cloudinary.uploader.replace_tag(tags.join(','), [publicId], { resource_type });
+      }
     }
     return NextResponse.json({ success: true, updates });
   } catch (err) {
+    console.error("Update failed:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
