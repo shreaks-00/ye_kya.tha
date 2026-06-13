@@ -13,10 +13,14 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-async function getFeaturedMemes() {
+async function getMemes(type) {
   try {
+    let expression = 'resource_type:image OR resource_type:video';
+    if (type === 'video') expression = 'resource_type:video';
+    if (type === 'image') expression = 'resource_type:image';
+
     const result = await cloudinary.search
-      .expression('resource_type:image OR resource_type:video')
+      .expression(expression)
       .sort_by('created_at', 'desc')
       .max_results(6)
       .with_field('context')
@@ -29,7 +33,42 @@ async function getFeaturedMemes() {
 }
 
 export default async function Home() {
-  const featured = await getFeaturedMemes();
+  const allMemes = await getMemes('all');
+  const videos = await getMemes('video');
+  const images = await getMemes('image');
+
+  // Helper component to render a section
+  const MemeSection = ({ title, icon, items }) => (
+    <section className={`section ${styles.featuredSection}`}>
+      <div className="container">
+        <ScrollReveal>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>
+              {icon} <span className="gradient-text">{title}</span>
+            </h2>
+            <Link href="/memes" className="btn btn-secondary btn-sm">
+              See All →
+            </Link>
+          </div>
+        </ScrollReveal>
+
+        {items.length > 0 ? (
+          <div className="meme-grid">
+            {items.map((item, i) => (
+              <ScrollReveal key={item.public_id} delay={i * 80}>
+                <MemeCard item={item} />
+              </ScrollReveal>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.emptyState}>
+            <span className={styles.emptyEmoji}>🐣</span>
+            <p>Memes are being loaded into the vault...</p>
+          </div>
+        )}
+      </div>
+    </section>
+  );
 
   return (
     <div className={styles.page}>
@@ -113,45 +152,18 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* ---- Featured Memes ---- */}
-      <section className={`section ${styles.featuredSection}`}>
-        <div className="container">
-          <ScrollReveal>
-            <div className={styles.sectionHeader}>
-              <h2 className={styles.sectionTitle}>
-                🔥 <span className="gradient-text">Latest Drops</span>
-              </h2>
-              <Link href="/memes" className="btn btn-secondary btn-sm" id="see-all-btn">
-                See All →
-              </Link>
-            </div>
-          </ScrollReveal>
-
-          {featured.length > 0 ? (
-            <div className="meme-grid">
-              {featured.map((item, i) => (
-                <ScrollReveal key={item.public_id} delay={i * 80}>
-                  <MemeCard item={item} />
-                </ScrollReveal>
-              ))}
-            </div>
-          ) : (
-            <div className={styles.emptyState}>
-              <span className={styles.emptyEmoji}>🐣</span>
-              <p>Memes are being loaded into the vault...</p>
-              <p className={styles.emptyHint}>Follow us on Instagram while you wait!</p>
-            </div>
-          )}
-
-          {featured.length > 0 && (
-            <div className={styles.viewMore}>
-              <Link href="/memes" className="btn btn-primary" id="view-more-btn">
-                View All Memes 🎭
-              </Link>
-            </div>
-          )}
+      {/* ---- Categories/Sections ---- */}
+      <div className={styles.sectionsWrapper}>
+        <MemeSection title="Latest Drops" icon="🔥" items={allMemes} />
+        <MemeSection title="Trending Videos" icon="🎬" items={videos} />
+        <MemeSection title="Fresh Memes" icon="🖼️" items={images} />
+        
+        <div className={styles.viewMoreGlobal}>
+          <Link href="/memes" className="btn btn-primary" id="view-more-global">
+            View All Vault Items 🎭
+          </Link>
         </div>
-      </section>
+      </div>
 
       {/* ---- About Section ---- */}
       <section className={`section ${styles.aboutSection}`}>
