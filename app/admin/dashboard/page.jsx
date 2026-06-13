@@ -454,20 +454,20 @@ function ManageTab({ items, loading, onRefresh, showToast }) {
       {editItem && (
         <div className={styles.modalOverlay} onClick={(e) => e.target === e.currentTarget && setEditItem(null)}>
           <div className={styles.modal}>
-            <h3 className={styles.modalTitle}>✏️ Edit Meme</h3>
+            <h3 className={styles.modalTitle}>✏️ Edit Title & Tags</h3>
             <div className={styles.field}>
-              <label className={styles.label}>Caption</label>
-              <input className="input" value={editCaption} onChange={(e) => setEditCaption(e.target.value)} id="edit-caption-input" />
+              <label className={styles.label}>Title</label>
+              <input className="input" value={editCaption} onChange={(e) => setEditCaption(e.target.value)} id="edit-caption-input" placeholder="Enter title..." />
             </div>
             <div className={styles.field}>
               <label className={styles.label}>Tags <span className={styles.labelHint}>(comma separated)</span></label>
               <input className="input" value={editTags} onChange={(e) => setEditTags(e.target.value)} id="edit-tags-input" />
             </div>
             <div className={styles.modalActions}>
-              <button className="btn btn-primary" onClick={saveEdit} disabled={saving} id="save-edit-btn">
+              <button className="btn btn-primary" onClick={saveEdit} disabled={saving} id="save-edit-btn" style={{ flex: 1, justifyContent: 'center' }}>
                 {saving ? 'Saving...' : '💾 Save'}
               </button>
-              <button className="btn btn-secondary" onClick={() => setEditItem(null)} id="cancel-edit-btn">Cancel</button>
+              <button className="btn btn-secondary" onClick={() => setEditItem(null)} id="cancel-edit-btn" style={{ flex: 1, justifyContent: 'center' }}>Cancel</button>
             </div>
           </div>
         </div>
